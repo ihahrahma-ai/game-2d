@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Petualangan 2D</title>
+<style>
+body{background:#18243a;color:white;text-align:center;font-family:Arial}
+canvas{background:skyblue;width:100%;max-width:500px;border:3px solid white}
+button{font-size:25px;padding:12px;margin:8px}
+</style>
+</head>
+<body>
+<h2>Petualangan 2D</h2>
+<p>Kumpulkan koin dan capai bendera!</p>
+<canvas id="game" width="400" height="300"></canvas>
+<br>
+<button ontouchstart="left=1" ontouchend="left=0"
+onmousedown="left=1" onmouseup="left=0">⬅️</button>
+<button ontouchstart="right=1" ontouchend="right=0"
+onmousedown="right=1" onmouseup="right=0">➡️</button>
+<button onclick="jump()">⬆️</button>
+<p id="score">Koin: 0</p>
+<script>
+const c=document.getElementById("game"),x=c.getContext("2d");
+let p={x:30,y:230,vy:0},left=0,right=0,coins=0,ground=250;
+function jump(){if(p.y>=230)p.vy=-11}
+function draw(){
+x.clearRect(0,0,400,300);
+x.fillStyle="green";x.fillRect(0,250,400,50);
+x.fillStyle="gold";x.beginPath();x.arc(190,220,10,0,7);x.fill();
+x.fillStyle="red";x.fillRect(340,190,8,60);
+x.fillStyle="white";x.fillRect(348,190,30,20);
+p.x+=right*3-left*3;
+p.vy+=0.5;p.y+=p.vy;
+if(p.y>230){p.y=230;p.vy=
