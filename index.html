@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Runner Adventure</title>
+<style>
+body {
+  background:#18243a;
+  color:white;
+  text-align:center;
+  font-family:Arial;
+}
+canvas {
+  background:linear-gradient(#65c9ef,#d7f5ff);
+  width:100%;
+  max-width:500px;
+  border:3px solid white;
+  border-radius:10px;
+}
+button {
+  padding:15px 25px;
+  font-size:20px;
+  border:0;
+  border-radius:12px;
+  margin:8px;
+  background:#ffca28;
+}
+</style>
+</head>
+<body>
+
+<h2>🏃 RUNNER ADVENTURE</h2>
+<p>Hindari rintangan dan raih skor tertinggi!</p>
+
+<canvas id="game" width="400" height="300"></canvas>
+
+<br>
+<button id="jump">LOMPAT ⬆️</button>
+<button id="start">MULAI / ULANG</button>
+
+<h3 id="score">Skor: 0</h3>
+
+<script>
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+
+let player, obstacles, score, speed, playing;
+let frame=0;
+
+function reset(){
+ player={x:55,y:220,w:28,h:30,vy:0};
+ obstacles=[];
+ score=0;
+ speed=4;
+ frame=0;
+ playing=true;
+}
+
+function jump(){
+ if(!playing)return;
+ if(player.y>=220)player.vy=-11;
+}
+
+document.getElementById("jump").onclick=jump;
+document.getElementById("start").onclick=reset;
+
+document.addEventListener("keydown",e=>{
+ if(e.code==="Space"||e.code==="ArrowUp")jump();
+});
+
+function draw(){
+ ctx.clearRect(0,0,400,300);
+
+ // Matahari
+ ctx.fillStyle="#ffdf55";
+ ctx.beginPath();
+ ctx.arc(330,55,25,0,Math.PI*2);
+ ctx.fill();
+
+ // Tanah
+ ctx.fillStyle="#43a047";
+ ctx.fillRect(0,250,400,50);
+
+ if(playing){
+  frame++;
+  score++;
+  speed=4+Math.floor(score/500)*0.5;
+
+  player.vy+=0.55;
+  player.y+=player.vy;
+
+  if(player.y>220){
+   player.y=220;
+   player.vy=0;
+  }
+
+  if(frame%85===0){
+   obstacles.push({x:410,y:215,w:25,h:35});
+  }
+
+  obstacles.forEach(o=>{
+   o.x-=speed;
+
+   ctx.fillStyle="#e53935";
+   ctx.fillRect(o.x,o.y,o.w,o.h);
+
+   if(
+    player.x+player.w>o.x &&
+    player.x<o.x+o.w &&
+    player.y+player.h>o.y
+   ){
+    playing=false;
+   }
+  });
+
+  obstacles=obstacles.filter(o=>o.x>-40);
+ }
+
+ // Karakter
+ ctx.fillStyle="#1565c0";
+ ctx.fillRect(player.x,player.y,player.w,player.h);
+
+ ctx.fillStyle="white";
+ ctx.fillRect(player.x+17,player.y+6,6,6);
+
+ ctx.fillStyle="black";
+ ctx.font="16px Arial";
+ ctx.fillText("Skor: "+score,15,25);
+
+ if(!playing){
+  ctx.fillStyle="#18243a";
+  ctx.font="bold 28px Arial";
+  ctx.fillText("GAME OVER",115,120);
+  ctx.font="16px Arial";
+  ctx.fillText("Tekan MULAI untuk bermain lagi",75,150);
+ }
+
+ document.getElementById("score").innerText="Skor: "+score;
+
+ requestAnimationFrame(draw);
+}
+
+reset();
+draw();
+</script>
+</body>
+</html>
